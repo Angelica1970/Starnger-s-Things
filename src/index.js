@@ -7,6 +7,7 @@ const[registerUsername,setRegisterUsername] = useState('');
 const[registerPassword,setRegisterPassword] = useState('');
 const[loginUsername,setLoginUsername] = useState('');
 const[loginPassword,setLoginPassword] = useState('');
+const[user,setUser] = useState({});
   
   
   const login =(ev) =>{
@@ -49,13 +50,26 @@ const[loginPassword,setLoginPassword] = useState('');
 })
 .then(response => response.json())
 .then(result => {
-    console.log(result);
+   const token = result.data.token;
+   fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+     },
+    })
+  .then(response => response.json())
+  .then(result => { 
+    const user = result.data
+      setUser(user);
+    })
+    .catch(console.error);
   })
-  .catch(err => console.log(err));
+    .catch(err => console.log(err));
   }
   return(
     <div>
       <h1>Starnger Things</h1>
+      
       <form onSubmit = { register }>
         <input placeholder='unsername'
         value ={registerUsername} 
@@ -73,7 +87,7 @@ const[loginPassword,setLoginPassword] = useState('');
         onChange = {ev =>setLoginUsername(ev.target.value)}
         />
         <input placeholder='password' 
-        value ={registerPassword} 
+        value ={loginPassword} 
         onChange = {ev =>setLoginPassword(ev.target.value)}
         />
         <button>Login</button>
