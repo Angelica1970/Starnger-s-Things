@@ -27,9 +27,10 @@ const[user,setUser] = useState({});
 })
 .then(response => response.json())
   .then(result => {
-
+    
     console.log(result);
-  })
+
+    })
   .catch(err => console.log(err));
   }
 
@@ -51,6 +52,7 @@ const[user,setUser] = useState({});
 .then(response => response.json())
 .then(result => {
    const token = result.data.token;
+   console.log(token)
    fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
     headers: {
       'Content-Type': 'application/json',
@@ -59,7 +61,7 @@ const[user,setUser] = useState({});
     })
   .then(response => response.json())
   .then(result => { 
-    const user = result.data
+    const user = result.data;
       setUser(user);
     })
     .catch(console.error);
@@ -69,7 +71,12 @@ const[user,setUser] = useState({});
   return(
     <div>
       <h1>Starnger Things</h1>
-      
+      {
+        user._id ? <div>Welcome{user.username}</div> : null
+      }
+      {
+        !user._id ? (
+      <div>
       <form onSubmit = { register }>
         <input placeholder='unsername'
         value ={registerUsername} 
@@ -92,7 +99,8 @@ const[user,setUser] = useState({});
         />
         <button>Login</button>
       </form>
-      
+      </div>) : null
+      } 
     </div>
   )
    
