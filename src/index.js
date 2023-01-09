@@ -8,6 +8,24 @@ const[registerPassword,setRegisterPassword] = useState('');
 const[loginUsername,setLoginUsername] = useState('');
 const[loginPassword,setLoginPassword] = useState('');
 const[user,setUser] = useState({});
+
+useEffect(()=> {
+  const token = window.localStorage.getItem('token');
+  if(token){
+    fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then(response => response.json())
+    .then(result => {
+      const user = result.data
+        setUser(user);
+      })
+      .catch(err => console.log(err));
+  }
+},[]);
   
   
   const login =(ev) =>{
@@ -26,9 +44,25 @@ const[user,setUser] = useState({});
   })
 })
 .then(response => response.json())
+.then(result => {
+  if(!result.success){
+    throw result.error;
+  }
+    const token = result.data.token
+    window.localStorage.setItem('token',token);
+    fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
+   headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+}).then(response => response.json())
   .then(result => {
+    const user = result.data;
+    setUser(user);
+  })
+  .catch(console.error);
     
-    console.log(result);
+   console.log(result);
 
     })
   .catch(err => console.log(err));
@@ -36,8 +70,7 @@ const[user,setUser] = useState({});
 
   const register = (ev)=>{
     ev.preventDefault();
-
-    fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/register', {
+    fetch('https://strangers-things.herokuapp.com/api//2209-FTB-ET-WEB-AM/users/register', {
   method: "POST",
   headers: {
     'Content-Type': 'application/json'
@@ -48,31 +81,28 @@ const[user,setUser] = useState({});
       password: registerPassword
     }
   })
-})
-.then(response => response.json())
-.then(result => {
-   const token = result.data.token;
-   console.log(token)
-   fetch('https://strangers-things.herokuapp.com/api/2209-FTB-ET-WEB-AM/users/me', {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-     },
-    })
-  .then(response => response.json())
-  .then(result => { 
-    const user = result.data;
-      setUser(user);
-    })
-    .catch(console.error);
+}).then(response => response.json())
+  .then(result => {
+    if(!result.success){
+      throw result.error
+    }
+    console.log(result);
   })
-    .catch(err => console.log(err));
-  }
+  .catch(err => console.log(err));
+
+    }
+     
+    const logout = ()=> {
+      window.localStorage.removeItem('token');
+      setUser({});
+    }
+
+
   return(
     <div>
       <h1>Starnger Things</h1>
       {
-        user._id ? <div>Welcome{user.username}</div> : null
+        user._id ? <div>Welcome {user.username} <button onClick={logout}>Logout</button></div> : null
       }
       {
         !user._id ? (
