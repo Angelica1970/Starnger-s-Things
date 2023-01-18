@@ -39,9 +39,6 @@ const[password,setPassword] = useState('');
 
 
   return(
-    
-     
-      
       <form onSubmit = { login }>
         <input placeholder='unsername'
         value ={username} 
@@ -53,10 +50,7 @@ const[password,setPassword] = useState('');
         />
         <button disabled ={!username || !password }>Login</button>
       </form>
-      
-      
-    
-  );
+    );
    
  
 };
